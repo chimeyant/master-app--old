@@ -1,2 +1,2 @@
-# simanata-client
-Sistem Manajemen Talenta Kabupaten Tangerang (Client)
+# SISTEM APP FRONTEND TEMPLATE
+Sistem Aplikasi Template Frontend
