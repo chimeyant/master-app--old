@@ -253,26 +253,55 @@
   </div>
 </template>
 
-<script lang="vue">
+<script>
 import { mapActions, mapState } from "vuex";
 
 export default {
-  name: "Home",
+  name: "manajemen-fitur",
   data: () => ({
     num: 1,
     headers: [
-      { text: "PEMOHON", value: "pemohon", align:'left', sortable:false },
+      { text: "PEMOHON", value: "pemohon", align: "left", sortable: false },
       {
         text: "FITUR",
         align: "start",
         sortable: false,
         value: "title",
       },
-      { text: "TGL. PENGAJUAN", value: "date_request", width:160, align:'center' },
-      { text: "TGL. PROSES", value: "date_progress", align:'center',width:160, sortable:false },
-      { text: "PROG(%)", value: "progress", align:'center', sortable:false, width:100 },
-      { text: "STATUS", value: "status", align:'center', sortable:false, width:100 },
-      { text: "AKSI", value: "id", width:100, sortable:false, align:'center' },
+      {
+        text: "TGL. PENGAJUAN",
+        value: "date_request",
+        width: 160,
+        align: "center",
+      },
+      {
+        text: "TGL. PROSES",
+        value: "date_progress",
+        align: "center",
+        width: 160,
+        sortable: false,
+      },
+      {
+        text: "PROG(%)",
+        value: "progress",
+        align: "center",
+        sortable: false,
+        width: 100,
+      },
+      {
+        text: "STATUS",
+        value: "status",
+        align: "center",
+        sortable: false,
+        width: 100,
+      },
+      {
+        text: "AKSI",
+        value: "id",
+        width: 100,
+        sortable: false,
+        align: "center",
+      },
     ],
 
     form: {
@@ -283,11 +312,11 @@ export default {
     search: null,
     path: null,
 
-    progress:{
-        form:{
-            show:false
-        }
-    }
+    progress: {
+      form: {
+        show: false,
+      },
+    },
   }),
   computed: {
     ...mapState([
@@ -298,14 +327,14 @@ export default {
       "records",
       "loading",
       "event",
-      "snackbar"
+      "snackbar",
     ]),
   },
   created() {
     this.setPage({
       crud: true,
       dataUrl: "api/utility/fiturs",
-      pagination:false,
+      pagination: false,
       title: "MANAJEMEN FITUR",
       subtitle: "Berikut Daftar Seluruh Permohonan Fitur",
       breadcrumbs: [
@@ -320,7 +349,7 @@ export default {
           href: "utility-manajemen-fitur",
         },
       ],
-    }).then(()=> {
+    }).then(() => {
       this.fetchRecords();
     });
   },
@@ -335,7 +364,7 @@ export default {
       "postConfirmDelete",
       "assignFileBrowse",
       "setRecord",
-      "setLoading"
+      "setLoading",
     ]),
     openNewForm: function () {
       this.form.new = true;
@@ -349,25 +378,30 @@ export default {
       this.form.new = true;
       this.form.edit = true;
     },
-    openJadwal: function (val){
-      this.$router.push({name:'master-event-jadwal', params:{event_id:val}})
+    openJadwal: function (val) {
+      this.$router.push({
+        name: "master-event-jadwal",
+        params: { event_id: val },
+      });
     },
-    openDokumen: function(val){
-      this.$router.push({name:'master-event-dokumen',params
-      :{event_id:val}})
+    openDokumen: function (val) {
+      this.$router.push({
+        name: "master-event-dokumen",
+        params: { event_id: val },
+      });
     },
-    postAddNewRecord: function (){
-      this.postAddNew(this.record).then(()=>{
-        this.fetchRecords()
-        this.form.new= false
-      })
+    postAddNewRecord: function () {
+      this.postAddNew(this.record).then(() => {
+        this.fetchRecords();
+        this.form.new = false;
+      });
     },
-    editRecord: function(val) {
+    editRecord: function (val) {
       this.postEdit(val);
       this.form.new = true;
       this.form.edit = true;
     },
-     postUpdateRecord: function() {
+    postUpdateRecord: function () {
       this.postUpdate(this.record).then(() => {
         this.fetchRecords();
         this.path = "";
@@ -376,7 +410,7 @@ export default {
       });
     },
 
-    postDeleteRecord: function(val) {
+    postDeleteRecord: function (val) {
       this.postConfirmDelete(val);
     },
     postDownload(val) {
@@ -384,59 +418,66 @@ export default {
     },
 
     openProgress: function (value) {
-        this.record.id = value
-        this.progress.form.show = true
+      this.record.id = value;
+      this.progress.form.show = true;
     },
 
     postSetProgress: async function () {
-        try {
-            this.setLoading({dialog: true, text:"Update Progress"})
-            let {data:{status, message}}= await this.http.post("api/utility/fiturs-set-progress", this.record);
-            if(!status){
-                this.snackbar.color ="orange"
-                this.snackbar.text = message
-                this.snackbar.state = true
-                return
-            }
-            this.snackbar.color = this.theme.color
-            this.snackbar.text = message
-            this.snackbar.state = true
-            this.progress.form.show = false
-            this.fetchRecords()
-        } catch (error) {
-            this.snackbar.color = "red"
-            this.snackbar.text = "Opps..., terjadi kesalahan "+ error
-            this.snackbar.state = true
-        }finally{
-            this.setLoading({dialog:false, text:""})
-        }  
+      try {
+        this.setLoading({ dialog: true, text: "Update Progress" });
+        let {
+          data: { status, message },
+        } = await this.http.post(
+          "api/utility/fiturs-set-progress",
+          this.record
+        );
+        if (!status) {
+          this.snackbar.color = "orange";
+          this.snackbar.text = message;
+          this.snackbar.state = true;
+          return;
+        }
+        this.snackbar.color = this.theme.color;
+        this.snackbar.text = message;
+        this.snackbar.state = true;
+        this.progress.form.show = false;
+        this.fetchRecords();
+      } catch (error) {
+        this.snackbar.color = "red";
+        this.snackbar.text = "Opps..., terjadi kesalahan " + error;
+        this.snackbar.state = true;
+      } finally {
+        this.setLoading({ dialog: false, text: "" });
+      }
     },
 
     postSelesai: async function (value) {
-        try {
-            this.setLoading({dialog:true, text:"Set Selesai"})
-            let{data:{status,message}}= await this.http.post("api/utility/fiturs-set-selesai", {id:value})
-            if(!status){
-                this.snackbar.color = "orange"
-                this.snacknar.text = message
-                this.snackbar.state= true
-                return
-            }
-
-            this.snackbar.color = this.theme.color
-            this.snackbar.text = message
-            this.snackbar.state = true
-            this.fetchRecords()
-        } catch (error) {
-            this.snackbar.color = "red"
-            this.snackbar.text = "Opps..., terjadi kesalahan "+ error
-            this.snackbar.state = true 
-        }finally{
-            this.setLoading({dialog:false, text:""})
+      try {
+        this.setLoading({ dialog: true, text: "Set Selesai" });
+        let {
+          data: { status, message },
+        } = await this.http.post("api/utility/fiturs-set-selesai", {
+          id: value,
+        });
+        if (!status) {
+          this.snackbar.color = "orange";
+          this.snacknar.text = message;
+          this.snackbar.state = true;
+          return;
         }
-    }
 
+        this.snackbar.color = this.theme.color;
+        this.snackbar.text = message;
+        this.snackbar.state = true;
+        this.fetchRecords();
+      } catch (error) {
+        this.snackbar.color = "red";
+        this.snackbar.text = "Opps..., terjadi kesalahan " + error;
+        this.snackbar.state = true;
+      } finally {
+        this.setLoading({ dialog: false, text: "" });
+      }
+    },
   },
-
 };
 </script>

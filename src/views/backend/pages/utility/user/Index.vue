@@ -2,15 +2,48 @@
   <div :class="device.desktop ? `home pa-6`:`home pa-0`">
 
     <v-row>
-      <v-col :cols="device.desktop ?7:12">
+      <v-col :cols="device.desktop ?12:12">
         <v-card class="animated animate__fadeInUp rounded-0">
           <v-card-title :class="`flex flex-row-reverse ` + theme.color + ` lighten-1`">
-            <v-btn
-              icon
-              @click="fetchRecords"
+            <v-tooltip
+              :color="theme.color + ` draken-4`"
+              bottom
             >
-              <v-icon color="white">autorenew</v-icon>
-            </v-btn>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  text
+                  small
+                  icon
+                  v-on="on"
+                >
+                  <v-icon
+                    color="white"
+                    @click="openForm"
+                  >add_circle</v-icon>
+                </v-btn>
+              </template>
+              <span>Tambah Pengguna</span>
+            </v-tooltip>
+
+            <v-tooltip
+              :color="theme.color + ` draken-4`"
+              bottom
+            >
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  text
+                  small
+                  icon
+                  v-on="on"
+                >
+                  <v-icon
+                    color="white"
+                    @click="fetchRecords"
+                  >mdi-refresh-circle</v-icon>
+                </v-btn>
+              </template>
+              <span>Refresh</span>
+            </v-tooltip>
             <v-spacer></v-spacer>
             <v-text-field
               v-model="table.options.search"
@@ -24,15 +57,18 @@
             ></v-text-field>
           </v-card-title>
           <v-data-table
+            v-show="device.desktop"
             :headers="headers"
             :items="records"
-            :options.sync="table.options"
-            :server-items-length="table.total"
-            class="elevation-2"
+            :items-per-page="table.options.itemsPerPage"
+            :page.sync="table.options.page"
+            class="elevation-2 mb-1"
             :color="theme.color"
             :loading="loading.table"
-            :search="table.options.search"
             loading-text="Loading... Please wait"
+            :search="search"
+            hide-default-footer
+            @page-count="table.options.pageCount = $event"
             show-select
           >
             <v-progress-linear
@@ -77,99 +113,106 @@
           </v-data-table>
         </v-card>
       </v-col>
-      <v-col :cols="device.desktop ? 5:12">
-        <v-card class="animated animate__fadeInUp rounded-0">
-          <v-card-title :class="theme.color + ` lighten-1 white--text`">
-            Formulir Akun Aplikasi
-          </v-card-title>
-          <v-card-subtitle :class="theme.color + ` lighten-1 white--text`">
-            Formulir untuk mendaftarkan/merubah akun aplikasi
-          </v-card-subtitle>
-          <v-divider></v-divider>
-
+    </v-row>
+    <v-col col="12">
+      <v-dialog
+        transition="dialog-bottom-transition"
+        v-model="form.add"
+        :max-width="device.desktop ? `600px` : `100%`"
+        persistent
+      >
+        <v-card class="rounded-0">
+          <v-toolbar
+            :color="theme.color"
+            dark
+          >
+            <v-icon class="mr-1">mdi-circle</v-icon>Manajemen Pengguna
+          </v-toolbar>
+          <v-card-title class="justify-center">Formulir Manajemen Pengguna</v-card-title>
           <v-card-text>
-            <v-row :no-gutters="device.mobile">
-              <v-col cols="12">
-                <v-text-field
-                  label="Nama Pengguna"
-                  :color="theme.color"
-                  hide-details="device.desktop"
-                  autocomplete="off"
-                  outlined
-                  dense
-                  v-model="record.name"
-                >
-                </v-text-field>
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Email"
-                  :color="theme.color"
-                  type="email"
-                  hide-details="device.desktop"
-                  autocomplete="off"
-                  v-model="record.email"
-                  outlined
-                  dense
-                ></v-text-field>
-              </v-col>
 
-              <v-col cols="12">
-                <v-select
-                  label="Level"
-                  :color="theme.color"
-                  v-model="record.authent"
-                  :items="authents"
-                  :hide-details="device.desktop"
-                  outlined
-                  dense
-                ></v-select>
-              </v-col>
+            <v-col cols="12">
+              <v-text-field
+                label="Nama Pengguna"
+                :color="theme.color"
+                hide-details="device.desktop"
+                autocomplete="off"
+                outlined
+                dense
+                v-model="record.name"
+              >
+              </v-text-field>
+            </v-col>
+            <v-col cols="12">
+              <v-text-field
+                label="Email"
+                :color="theme.color"
+                type="email"
+                hide-details="device.desktop"
+                autocomplete="off"
+                v-model="record.email"
+                outlined
+                dense
+              ></v-text-field>
+            </v-col>
 
-              <v-col cols="5">
-                <v-switch
-                  label="Status"
-                  :color="theme.color"
-                  v-model="record.status"
-                  :hide-details="device.desktop"
-                ></v-switch>
-              </v-col>
+            <v-col cols="12">
+              <v-select
+                label="Level"
+                :color="theme.color"
+                v-model="record.authent"
+                :items="authents"
+                :hide-details="device.desktop"
+                outlined
+                dense
+              ></v-select>
+            </v-col>
+            <v-col cols="12">
+              <v-row>
+                <v-col cols="5">
+                  <v-switch
+                    label="Status"
+                    :color="theme.color"
+                    v-model="record.status"
+                    :hide-details="device.desktop"
+                  ></v-switch>
+                </v-col>
 
-              <v-col cols="5">
-                <v-switch
-                  label="Reset Kata Sandi"
-                  :color="theme.color"
-                  v-model="record.reset"
-                  :hide-details="device.desktop"
-                ></v-switch>
-              </v-col>
-            </v-row>
+                <v-col cols="5">
+                  <v-switch
+                    label="Reset Kata Sandi"
+                    :color="theme.color"
+                    v-model="record.reset"
+                    :hide-details="device.desktop"
+                  ></v-switch>
+                </v-col>
+              </v-row>
+            </v-col>
 
           </v-card-text>
           <v-card-actions class="flex flex-row-reverse">
-
             <v-btn
               outlined
               :color="theme.color"
               @click="postAddNewRecord"
-              v-show="!event.update"
+              v-show="!form.edit"
             >TAMBAH</v-btn>
             <v-btn
               outlined
               :color="theme.color"
               @click="postUpdateRecord"
-              v-show="event.update"
+              v-show="form.edit"
             >UBAH</v-btn>
-
-            <v-col>
-              <div class="subtitle-2 font-sm ml-1 grey--text">
-                * Kata Sandi Bawaan (12345678)
-              </div>
-            </v-col>
+            <v-btn
+              outlined
+              class="mr-2"
+              color="grey dark-3"
+              @click="closeForm"
+            >BATAL</v-btn>
           </v-card-actions>
         </v-card>
-      </v-col>
-    </v-row>
+      </v-dialog>
+    </v-col>
   </div>
 </template>
 
@@ -177,7 +220,7 @@
 import { mapActions, mapState } from "vuex";
 
 export default {
-  name: "Home",
+  name: "manajemen-user",
   data: () => ({
     num: 1,
     headers: [
@@ -188,7 +231,14 @@ export default {
         value: "name",
       },
       { text: "EMAIL", value: "email" },
-      { text: "AKSI", value: "id", align: "center", sortable: false },
+      {
+        text: "AKSI",
+        value: "id",
+        align: "center",
+        sortable: false,
+        width: 85,
+        sortable: false,
+      },
     ],
     status: [
       { text: "Aktif", value: 0 },
@@ -196,34 +246,18 @@ export default {
     ],
     authents: [
       { text: "Administrator", value: "administrator" },
-      { text: "Assesor", value: "assesor" },
-      { text: "Admin Bangrir", value: "admin-bangrir" },
-      { text: "Pimpinan Bidang Renatur", value: "pimpinan-bidang-renatur" },
       {
-        text: "Pimpinan Bidang Data dan Pembinaan",
-        value: "pimpinan-bidang-data",
-      },
-      {
-        text: "Pimpinan Bidang Mutasi",
-        value: "pimpinan-bidang-mutasi",
-      },
-      {
-        text: "Bidang PSDM",
-        value: "bidang PSDM",
-      },
-      {
-        text: "Pimpinan OPD",
-        value: "pimpinan-opd",
-      },
-      {
-        text: "Peserta",
-        value: "peserta",
+        text: "User",
+        value: "user",
       },
     ],
     search: null,
   }),
   computed: {
     ...mapState([
+      "page",
+      "table",
+      "form",
       "theme",
       "http",
       "device",
@@ -231,16 +265,27 @@ export default {
       "records",
       "loading",
       "event",
-      "table",
     ]),
+    filterItems() {
+      if (this.search != null) {
+        return this.records.filter((item) => {
+          return (
+            item.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1
+          );
+        });
+      } else {
+        return this.records;
+      }
+    },
   },
   created() {
     this.setPage({
       crud: true,
       dataUrl: "api/utility/users",
-      pagination: true,
+      pagination: false,
       title: "MANAJEMEN PENGUNA",
       subtitle: "Berikut Daftar Pengguna Yang Sedia",
+      tableshow: true,
       breadcrumbs: [
         {
           text: "Pengguna",
@@ -255,7 +300,7 @@ export default {
       ],
     });
 
-    // this.fetchRecords();
+    this.fetchRecords();
   },
   mounted() {},
   methods: {
@@ -266,20 +311,39 @@ export default {
       "postEdit",
       "postUpdate",
       "postConfirmDelete",
+      "setForm",
     ]),
+    openForm: function () {
+      this.setForm({
+        add: true,
+        edit: false,
+      });
+      this.setRecord({});
+    },
+    closeForm: function () {
+      this.setForm({
+        add: false,
+        edit: false,
+      });
+    },
 
     postAddNewRecord: function () {
       this.postAddNew(this.record).then(() => {
-        this.fetchRecords();
+        this.closeForm();
       });
     },
     editRecord: function (val) {
-      this.postEdit(val);
+      this.postEdit(val).then(() => {
+        this.setForm({
+          add: true,
+          edit: true,
+        });
+      });
     },
 
     postUpdateRecord: function () {
       this.postUpdate(this.record).then(() => {
-        this.fetchRecords();
+        this.closeForm();
       });
     },
 
@@ -287,13 +351,6 @@ export default {
       this.postConfirmDelete(val);
     },
   },
-  watch: {
-    "table.options": {
-      handler() {
-        this.fetchRecords();
-      },
-      deep: true,
-    },
-  },
+  watch: {},
 };
 </script>

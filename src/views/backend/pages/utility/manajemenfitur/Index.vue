@@ -193,26 +193,54 @@
   </div>
 </template>
 
-<script lang="vue">
+<script >
 import { mapActions, mapState } from "vuex";
 
 export default {
-  name: "Home",
+  name: "manajemen-fitur",
   data: () => ({
     num: 1,
     headers: [
-      
       {
         text: "FITUR",
         align: "start",
         sortable: false,
         value: "title",
       },
-      { text: "TGL. PENGAJUAN", value: "date_request", width:160, align:'center' },
-      { text: "TGL. PROSES", value: "date_finish", align:'center',width:160, sortable:false },
-      { text: "PROG(%)", value: "progress", align:'center', sortable:false, width:100 },
-      { text: "STATUS", value: "status", align:'center', sortable:false, width:100 },
-      { text: "AKSI", value: "id", width:100, sortable:false, align:'center' },
+      {
+        text: "TGL. PENGAJUAN",
+        value: "date_request",
+        width: 160,
+        align: "center",
+      },
+      {
+        text: "TGL. PROSES",
+        value: "date_finish",
+        align: "center",
+        width: 160,
+        sortable: false,
+      },
+      {
+        text: "PROG(%)",
+        value: "progress",
+        align: "center",
+        sortable: false,
+        width: 100,
+      },
+      {
+        text: "STATUS",
+        value: "status",
+        align: "center",
+        sortable: false,
+        width: 100,
+      },
+      {
+        text: "AKSI",
+        value: "id",
+        width: 100,
+        sortable: false,
+        align: "center",
+      },
     ],
     form: {
       new: false,
@@ -230,7 +258,7 @@ export default {
       "records",
       "loading",
       "event",
-      "snackbar"
+      "snackbar",
     ]),
   },
   created() {
@@ -252,13 +280,10 @@ export default {
           href: "utility-manajemen-fitur",
         },
       ],
-    })
+    });
     this.fetchRecords();
-    
   },
-  mounted() {
-    
-  },
+  mounted() {},
   methods: {
     ...mapActions([
       "setPage",
@@ -269,10 +294,10 @@ export default {
       "postConfirmDelete",
       "assignFileBrowse",
       "setLoading",
-      "setRecord"
+      "setRecord",
     ]),
     openNewForm: function () {
-      this.setRecord({})
+      this.setRecord({});
       this.form.new = true;
       this.form.edit = false;
     },
@@ -284,32 +309,30 @@ export default {
       this.form.new = true;
       this.form.edit = true;
     },
-    postAddNewRecord: function (){
-      this.postAddNew(this.record).then(()=>{
-        this.fetchRecords()
-        this.form.new= false
-      })
+    postAddNewRecord: function () {
+      this.postAddNew(this.record).then(() => {
+        this.fetchRecords();
+        this.form.new = false;
+      });
     },
-    editRecord: function(val) {
+    editRecord: function (val) {
       this.postEdit(val);
       this.form.new = true;
       this.form.edit = true;
     },
-     postUpdateRecord: function() {
+    postUpdateRecord: function () {
       this.postUpdate(this.record).then(() => {
         this.fetchRecords();
         this.form.new = false;
         this.form.edit = false;
       });
     },
-    postDeleteRecord: function(val) {
+    postDeleteRecord: function (val) {
       this.postConfirmDelete(val);
     },
     postDownload(val) {
       window.open(val, "__blank");
     },
-
   },
-
 };
 </script>
